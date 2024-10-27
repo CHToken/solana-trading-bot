@@ -29,30 +29,34 @@ export class RenouncedFreezeFilter implements Filter {
       }
 
       const deserialize = MintLayout.decode(accountInfo.data);
-      const renounced = !this.checkRenounced || deserialize.mintAuthorityOption === 0;
-      const freezable = !this.checkFreezable || deserialize.freezeAuthorityOption !== 0;
-      const ok = renounced && !freezable;
+
+      // Renounced check
+      const renouncedOK = !this.checkRenounced || (deserialize.mintAuthorityOption === 0);
+
+      // Freezable check: confirm if the token is freezable or has an active freeze authority
+      const freezeAuthorityExists = deserialize.freezeAuthorityOption === 1 && deserialize.freezeAuthority !== null;
+      const freezeOK = !this.checkFreezable || !freezeAuthorityExists;
+      const ok = renouncedOK && freezeOK;
+
       const message: string[] = [];
-
-      if (!renounced) {
-        message.push('mint');
+      if (!renouncedOK) {
+        message.push('minting authority is not renounced');
+      }
+      if (!freezeOK) {
+        message.push('token has a freeze authority');
       }
 
-      if (freezable) {
-        message.push('freeze');
-      }
-
-      return { ok: ok, message: ok ? undefined : `RenouncedFreeze -> Creator can ${message.join(' and ')} tokens` };
+      return { ok: ok, message: ok ? undefined : `RenouncedFreeze -> ${message.join(' and ')}` };
     } catch (e) {
       logger.error(
         { mint: poolKeys.baseMint },
-        `RenouncedFreeze -> Failed to check if creator can ${this.errorMessage.join(' and ')} tokens`,
+        `RenouncedFreeze -> Failed to check if ${this.errorMessage.join(' and ')} are applicable`,
       );
     }
 
     return {
       ok: false,
-      message: `RenouncedFreeze -> Failed to check if creator can ${this.errorMessage.join(' and ')} tokens`,
+      message: `RenouncedFreeze -> Failed to check if ${this.errorMessage.join(' and ')} are applicable`,
     };
   }
 }

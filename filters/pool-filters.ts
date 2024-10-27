@@ -51,17 +51,20 @@ export class PoolFilters {
       return true;
     }
 
-    const result = await Promise.all(this.filters.map((f) => f.execute(poolKeys)));
-    const pass = result.every((r) => r.ok);
+    // Collect results from all filters
+    const results = await Promise.all(
+      this.filters.map((filter) => filter.execute(poolKeys))
+    );
 
-    if (pass) {
-      return true;
+    const pass = results.every((result) => result.ok);
+
+    // Log messages for filters that failed
+    if (!pass) {
+      for (const filterResult of results.filter((result) => !result.ok)) {
+        logger.trace(filterResult.message);
+      }
     }
 
-    for (const filterResult of result.filter((r) => !r.ok)) {
-      logger.trace(filterResult.message);
-    }
-
-    return false;
+    return pass;
   }
 }

@@ -25,6 +25,7 @@ export const RPC_WEBSOCKET_ENDPOINT = retrieveEnvVariable('RPC_WEBSOCKET_ENDPOIN
 
 // Bot
 export const LOG_LEVEL = retrieveEnvVariable('LOG_LEVEL', logger);
+export const LOG_FILENAME = retrieveEnvVariable('LOG_FILENAME', logger);
 export const ONE_TOKEN_AT_A_TIME = retrieveEnvVariable('ONE_TOKEN_AT_A_TIME', logger) === 'true';
 export const COMPUTE_UNIT_LIMIT = Number(retrieveEnvVariable('COMPUTE_UNIT_LIMIT', logger));
 export const COMPUTE_UNIT_PRICE = Number(retrieveEnvVariable('COMPUTE_UNIT_PRICE', logger));
@@ -63,3 +64,4 @@ export const MIN_POOL_SIZE = retrieveEnvVariable('MIN_POOL_SIZE', logger);
 export const MAX_POOL_SIZE = retrieveEnvVariable('MAX_POOL_SIZE', logger);
 export const USE_SNIPE_LIST = retrieveEnvVariable('USE_SNIPE_LIST', logger) === 'true';
 export const SNIPE_LIST_REFRESH_INTERVAL = Number(retrieveEnvVariable('SNIPE_LIST_REFRESH_INTERVAL', logger));
+export const MAX_OWNER_PERCENTAGE = Number(retrieveEnvVariable('MAX_OWNER_PERCENTAGE', logger) || 5);
